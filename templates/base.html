@@ -1,0 +1,90 @@
+{% load static wagtailuserbar navtags %}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>{% block title %}{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}{% block title_suffix %}{% endblock %}</title>
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+{# Global stylesheets #}
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+{# Local static assets such as css, images and javascrpt should be stored at [yourapp]/static/[yourapp]/... #}
+</head>
+
+<body class="{% block body_class %}mdl-color-text--grey-800{% endblock %}">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    {% block main_header %}
+        <header id="main-header" class="mdl-layout__header mdl-layout__header--waterfall">
+            <section id="top-menu" class="mdl-layout__header-row">
+                {% block top_menu %}
+                    <a class="mdl-layout-title layout-title--link" href="/">{{request.site.site_name}}</a> 
+                    <div class="mdl-layout-spacer"></div>
+                    <nav class="navigation mdl-navigation">
+                        {% topmenu parent=request.site.root_page currentpage=self %}
+                    </nav>
+                    {% block search_form %}
+                        <!-- start search form -->
+                        <form action="{% url 'search' %}" method="get" accept-charset="utf-8">
+
+
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                                <label class="mdl-button mdl-js-button mdl-button--icon" for="search-expandable">
+                                    <i class="material-icons">search</i>
+                                </label>
+                                <div class="mdl-textfield__expandable-holder">
+                                    <input name="query" value="{{search_query}}" class="mdl-textfield__input" type="text" id="search-expandable" />
+                                    <label class="mdl-textfield__label" for="search-expandable">Search text</label>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- end search form -->
+                    {% endblock %}
+                {% endblock %}
+            </section> <!-- #top-menu -->
+
+        </header>
+        <div class="mdl-layout__drawer">
+            <a class="mdl-layout-title layout-title--link" href="/">{{request.site.site_name}}</a> 
+            <nav class="mdl-navigation">
+                {% topmenu parent=request.site.root_page currentpage=self %}
+            </nav>
+        </div>
+    {% endblock %}
+
+
+    <main class="mdl-layout__content">
+    {# {% wagtailuserbar %} #}
+    {% block content %}
+
+    {% endblock %}
+    <footer id="main-footer" class="mdl-mega-footer">
+        {% block footer %}
+            {% footer %}
+            {% endblock %}
+        </footer>
+        </main>
+
+    </div> <!-- mdl-layout -->
+    {% block below_layout %}
+        <!-- Some modal extra content here -->
+    {% endblock %}
+
+    {# Global javascript #}
+    <script src="{% static 'mdl/material.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/layout.js' %}"></script>
+
+    {% block extra_css %}
+        {# Override this in templates to add extra stylesheets #}
+    {% endblock %}
+    {% block extra_js %}
+        {# Override this in templates to add extra javascript #}
+    {% endblock %}
+    </body>
+    </html>

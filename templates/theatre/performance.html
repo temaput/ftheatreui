@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+  <style type="text/css" media="screen">
+  .top-area { background-image: url({{ page.top_image.file.url }}); }
+  </style>
+{% endblock %}
+
+
+
+{% block content %}
+  <section class="top-area">
+    <h1 class="mdl-typography--display-4 top-area__title">{{ page.title }}</h1>
+    {% if page.subtitle %}
+      <h2 class="mdl-typography--headline top-area__subtitle">{{ page.subtitle }}</h2>
+    {% endif %}
+  </section>
+  <section class="layout-section">
+    <div class="layout-container mdl-grid">
+    {{ page.description|richtext }}
+    </div>
+  </section>
+  {% if self.gallery_items.count %}
+    <section class="layout-section--darker">
+      <div class="layout-container mdl-grid">
+        {% include "includes/gallery.html" with gallery_items=self.gallery_items.all no_radius=True only %}
+      </div>
+    </section>
+  {% endif %}
+  {% if self.video %}
+    <section class="layout-section">
+      <div class="layout-container mdl-grid">
+        {% include "includes/video_embed.html" with video=self.video only %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'scripts/gallery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/video_embed.js' %}"></script>
+{% endblock %}
+{% block below_layout %}
+  {% include 'includes/photoswipe_template.html' %}
+{% endblock %}

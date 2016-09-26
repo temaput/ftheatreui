@@ -1,0 +1,12 @@
+{% if video %}
+  <div class="video-embed mdl-cell mdl-cell--12-col">
+    <div class="video-embed__container {% if video.is_widescreen %}video-embed__container--widescreen{% endif %}">
+      <div id="ytplayer" class="video-embed__player">
+        <script id="ytplayer-data" type="application/json">
+{{ video.get_player_parameters|safe }}
+        </script>
+      </div>
+    </div>
+  </div>
+
+{% endif %}

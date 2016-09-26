@@ -1,0 +1,22 @@
+.video-embed {
+    display: block;
+}
+
+.video-embed__container {
+    position:relative;
+    height: 0;
+    width: 100%;
+    padding-bottom: 75%;
+    &--widescreen {
+        padding-bottom: 56.25%;
+    }
+}
+.video-embed__player {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+

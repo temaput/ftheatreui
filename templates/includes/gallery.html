@@ -1,0 +1,29 @@
+{% load wagtailimages_tags %}
+{% if gallery_items %}
+  <!-- Gallery element -->
+  <div class="gallery{% if is_flat %}--flat{% endif %} gallery-anchor" itemScope itemType="http://schema.org/ImageGallery">
+      {% for item in gallery_items %}
+        <figure itemProp="associatedMedia" itemScope 
+          itemType="http://schema.org/ImageObject" 
+          class="gallery__thumb-figure{% if no_radius %}--no-radius{% endif %} gallery-thumb-selector">
+          {% image item.image original as original_image %}
+          <a  href={{original_image.url}} itemProp="contentUrl" 
+            data-width={{original_image.width}} 
+            data-height={{original_image.height}}
+            data-index={{ forloop.counter0 }}
+            >
+            {% if is_flat %}
+              {% image item.image fill-400x400  width='' height='' class='gallery__thumb-img' %}
+            {% else %}
+              {% image item.image width-400  width='' height='' class='gallery__thumb-img' %}
+          {% endif %}
+          </a>
+          {% if item.caption %}
+            <figcaption itemProp="caption description">{{item.caption}}</figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+    <!-- Gallery end -->
+{% endif %}
+

@@ -1,0 +1,31 @@
+{% if has_top %}
+  <div class="mdl-mega-footer__top-section">
+    <div class="mdl-mega-footer__left-section">
+      <p>{{footer_data.telephone}}</p>
+    </div>
+    <div class="mdl-mega-footer__right-section">
+        {% for btn in footer_data.social_buttons.all %}
+          <a href="{{btn.link}}" role="button" title="{{btn.slug|title}}" class="mdl-mega-footer__social-btn mega-footer__social-btn--{{btn.slug}}"></a>
+        {% endfor %}
+    </div>
+  </div>
+{% endif %}
+{% if has_middle %}
+  <div class="mdl-mega-footer__middle-section">
+    {% for item in full_menu %}
+      <div class="mdl-mega-footer__drop-down-section">
+        <h1 class="mdl-mega-footer__heading">{{item.item_data.title}}</h1>
+        <ul class="mdl-mega-footer__link-list">
+          {% for subitem in item.subitems %}
+            <li><a href="{{subitem.url}}">{{subitem.title}}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% if has_bottom %}
+  <div class="mdl-mega-footer__bottom-section">
+    <div class="mdl-mega-footer__left-section"><span>{{footer_data.copyright}}</span></div>
+  </div>
+{% endif %}
