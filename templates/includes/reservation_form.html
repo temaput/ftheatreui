@@ -1,0 +1,9 @@
+{% load webapi_helpers %}
+
+<section class="layout-section" id="reservation-main"></section>
+<script id="reservation-prescribed-data" type="application/json">
+{% if performance %}
+{% prescribed_data instance=performance %}
+{% endif %}
+</script>
+

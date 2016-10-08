@@ -1,0 +1,27 @@
+.reservation-stepper__number {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+  width: 24px;
+
+  & > svg {
+    display: block;
+    color: #00bcd4;
+    fill: #00bcd4;
+    height: 24px;
+    width: 24px;
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    font-size: 24px;
+    -webkit-user-select: none;
+  }
+}
+
+.reservation-form__step {
+}
+
+.reservation-form__step--hidden {
+  display: none;
+}
+.reservation-form__step--active {
+  display: block;
+}

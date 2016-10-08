@@ -36,10 +36,12 @@
       </div>
     </section>
   {% endif %}
+  {% include "includes/reservation_form.html" with performance=self only %}
 {% endblock %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'scripts/gallery.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/video_embed.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/reservation.js' %}"></script>
 {% endblock %}
 {% block below_layout %}
   {% include 'includes/photoswipe_template.html' %}

@@ -12,7 +12,7 @@ function getDirs(dir) {
   const files = fs.readdirSync(dir);
   files.forEach(function(f) {
     const fullPath = path.join(dir, f);
-    if (fs.statSync(fullPath).isDirectory()) {
+    if (fs.statSync(fullPath).isDirectory() && f !== 'utils') {
       entries[f] = fullPath;
     }
   });
