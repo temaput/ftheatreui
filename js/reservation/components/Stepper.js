@@ -2,9 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import Store from '../Store.js';
 
-function getState() {
-  return Store.getSteps()
-}
 
 const svgElements = {
   completePath: ("M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 " +
@@ -15,23 +12,9 @@ export default class Stepper extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = getState();
-  }
-
-  onChange() {
-    this.setState(getState());
-  }
-
-  componentDidMount() {
-    Store.addChangeListener(this.onChange.bind(this))
-  }
-
-  componentWillUnmount() {
-    Store.removeChangeListener(this.onChange.bind(this))
   }
 
   renderStepNumber(step) {
-    const {current} = this.state;
     const completeLabel = (
       <svg 
         viewBox="0 0 24 24"
@@ -46,12 +29,12 @@ export default class Stepper extends React.Component {
         <circle cx="12" cy="12" r="10"></circle>
         <text x="12" y="16" textAnchor="middle" 
           fontSize="12" fill="#fff">
-          {step}
+          {step.number}
         </text>
       </svg>
     );
 
-    const svgLabel = step < current ? completeLabel: textLabel;
+    const svgLabel = step.current ? completeLabel: textLabel;
     const spanClass = classNames([
       "reservation-stepper__number",
     ]);
@@ -62,24 +45,22 @@ export default class Stepper extends React.Component {
     )
   }
 
-  renderStepTitle(step, name) {
-    const {current} = this.state;
+  renderStepTitle(step) {
     const stepNumber = this.renderStepNumber(step);
+    const {label} = step;
     const titleClass = classNames([
       'reservation-stepper__title',
     ]);
     return (
       <span className={titleClass}>
         {stepNumber}
-        {name}
+        {label}
       </span>
     );
   }
 
   renderStepControls(step) {
-    const {total} = this.state;
-    const hasPrevious = step > 1;
-    const hasFinish = step === total;
+    const {hasFinish, hasPrevious} = step;
     const buttonBaseClass = [
       "mdl-button",
       "mdl-js-button",
@@ -126,28 +107,24 @@ export default class Stepper extends React.Component {
   }
 
   render() {
-    const {total, current, names} = this.state;
-    const stepElements = new Array(total).fill().map((_, i) => {
-      const step = i + 1;
-      const name = names[i];
-      const isCurrent = step === current;
-      const isComplete = step < current;
+    const {steps} = this.props;
+    const stepElements = steps.map((step, i) => {
       const stepperClass = classNames([
         'reservation-stepper__step',
-        {'reservation-stepper__step--current': isCurrent},
-        {'reservation-stepper__step--complete': isComplete},
+        {'reservation-stepper__step--current': step.isCurrent},
+        {'reservation-stepper__step--complete': step.isComplete},
       ]);
 
       return (
         <div key={i} className={stepperClass}>
-          {this.renderStepTitle(step, name)}
-          {isCurrent && this.renderStepContainer(step)}
+          {this.renderStepTitle(step)}
+          {step.isCurrent && this.renderStepContainer(step)}
           {this.renderPlaceHolder()}
         </div>
       )
       
     });
-    return <div className="reservation-stepper">{stepElements}</div>
+    return (<div className="reservation-stepper">{stepElements}</div>)
   }
 
 

@@ -10,23 +10,10 @@ const ServerActions = {
     });
   },
 
-  receivePerformances(items) {
+  receiveData(itemType, items) {
     Dispatcher.dispatch({
-      type: ActionTypes.RECEIVE_PERFORMANCES,
-      items: items
-    })
-  },
-
-  receivePlaces(items) {
-    Dispatcher.dispatch({
-      type: ActionTypes.RECEIVE_PLACES,
-      items: items
-    })
-  },
-
-  receiveShows(items) {
-    Dispatcher.dispatch({
-      type: ActionTypes.RECEIVE_SHOWS,
+      type: ActionTypes.RECEIVE_DATA,
+      itemType: itemType,
       items: items
     })
   },

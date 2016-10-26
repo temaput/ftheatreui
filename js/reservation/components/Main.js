@@ -3,14 +3,14 @@ import Store from '../Store.js';
 import FormActions from '../actions/FormActionCreators.js';
 import ReservationForm from './ReservationForm.js';
 import Stepper from './Stepper.js';
+import {
+  getFixedFields, getCurrentStepFields, getFieldById
+} from '../dataTraversing.js';
 
 function getState() {
   return {
-    choices: Store.getChoices(),
-    currents: Store.getCurrents(),
-    status: Store.getStatus(),
+    fields: Store.getFields(),
     steps: Store.getSteps(),
-    errors: Store.getErrors(),
   }
 }
 
@@ -18,8 +18,8 @@ function getState() {
 export default class Main extends React.Component {
 
   constructor(props) {
-    super(props)
-    this.state = getState()
+    super(props);
+    this.state = getState();
   }
 
   getInitialData() {
@@ -41,14 +41,24 @@ export default class Main extends React.Component {
 
   }
 
+  getFilterFields() {
+    const filterFields = {place: null, performance: null, show: null};
+    Object.keys(filterFields).forEach(
+      fname => filterFields[fname] = getFieldById(this.state.fields, fname)
+    );
+    return filterFields;
+  }
+
   getMoreData() {
-    const {currents, choices, status} = this.state;
-    if (currents.place && currents.performance && !status.showsUpdated) {
-      FormActions.getShows(currents.performance, currents.place)
+    const {place, performance, show} = this.getFilterFields()
+    if (place.value && performance.value && show.choicesObsolete) {
+      FormActions.getShows(performance.value, place.value)
     }
   }
 
-
+  getReservationForm() {
+    return this.reservationForm;
+  }
 
   onChange() {
     const newState = getState();
@@ -60,27 +70,37 @@ export default class Main extends React.Component {
   }
 
   gotoNext() {
-    FormActions.gotoNext() 
+    //validation first
+    const errors = this.getReservationForm().validateCurrentStepFields();
+    FormActions.formValidation(errors)
+    if (Array.prototype.every(
+      Object.keys(errors), fname => errors[fname]===null
+    )) {
+      FormActions.gotoNext() 
+    }
   }
 
   gotoPrevious() {
     FormActions.gotoPrevious()
   }
 
+
   onChangeFormData(itemType, data, event) {
-    const {currents} = this.state;
-    const {placesFirst} = this.props.prescribedData;
+    const fixedFields = getFixedFields(this.state.fields);
+    const performanceIsFixed = fixedFields.some(f => f.name === 'performance');
+    const placeIsFixed = fixedFields.some(f => f.name === 'place');
+
     FormActions.changeFormData(itemType, data, event)
      
 
     switch (itemType) {
       case 'performance':
-        if (!placesFirst) {
+        if (!placeIsFixed) {
           FormActions.getPlaces(data)
         }
         break;
       case 'place':
-        if (placesFirst) {
+        if (!performanceIsFixed) {
           FormActions.getPerformances(data)
         }
         break;
@@ -107,16 +127,16 @@ export default class Main extends React.Component {
     return (
       <div>
         <Stepper
+          steps={this.state.steps}
           gotoNext={this.gotoNext.bind(this)}
           gotoPrevious={this.gotoPrevious.bind(this)}
         >
           <ReservationForm
-            step={this.state.steps.current}
-            currents={this.state.currents}
-            choices={this.state.choices}
+            steps={this.state.steps}
+            fields={this.state.fields}
             onChange={this.onChangeFormData.bind(this)}
-            onMakeReservation={this.makeReservation.bind(this)}
-            errors={this.state.errors}
+            onSubmit={this.makeReservation.bind(this)}
+            ref={el => this.reservationForm = el}
           />
         </Stepper>
       </div>

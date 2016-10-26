@@ -10,14 +10,15 @@ const propTypes = {
     PropTypes.string,
     PropTypes.number
   ]),
-  pattern: PropTypes.string,
   required: PropTypes.bool,
   disabled: PropTypes.bool,
+  error: PropTypes.node,
+  label: PropTypes.string.isRequired,
   rows: PropTypes.number,
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
-  error: PropTypes.node,
-  label: PropTypes.string.isRequired,
+  options: PropTypes.array,
+  multiple: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -31,7 +32,7 @@ function getState() {
   }
 }
 
-export default class TextField extends React.Component{
+export default class SelectField extends React.Component{
 
   constructor(props) {
     super(props)
@@ -45,7 +46,20 @@ export default class TextField extends React.Component{
     this.setState({isFocused: false});
   }
 
-
+  renderOptions() {
+    const options = this.props.options.map(
+      option => (
+        <option key={option.value} value={option.value}>
+          option.title
+        </option>
+      )
+    );
+    if (this.props.value === null) {
+      options.unshift(<option key="emptyoption"></option>)
+    }
+    return options;
+  }
+  
   render() {
     const {
       className, error, label, ...inputProps
@@ -68,15 +82,7 @@ export default class TextField extends React.Component{
       onBlur: this.onBlur.bind(this),
     };
 
-    const inputTag = inputProps.rows && 
-      inputProps.rows > 1 ? 'textarea' : 'input';
-
-
-    const inputNode = React.createElement(
-      inputTag,
-      {className: "mdl-textfield__input", ...inputProps, 
-        ref: fieldNode => this.fieldNode = fieldNode}
-    );
+    const inputClass = "mdl-textfield__input";
 
     const labelProps = {
       className: "mdl-textfield__label", htmlFor: inputProps.id
@@ -86,7 +92,10 @@ export default class TextField extends React.Component{
     return (
       <MDLComponent>
         <div {...groupProps} >
-          {inputNode}
+          <select className={inputClass} {...inputProps}
+          ref={fieldNode => this.fieldNode = fieldNode}>
+            {this.renderOptions()}
+          </select>
           <label {...labelProps}>{label}{inputProps.required ? '*': ''}</label>
           <span {...errorProps}>{error}</span>
         </div>
@@ -95,5 +104,5 @@ export default class TextField extends React.Component{
   }
 }
 
-TextField.propTypes = propTypes;
-TextField.defaultProps = defaultProps;
+SelectField.propTypes = propTypes;
+SelectField.defaultProps = defaultProps;

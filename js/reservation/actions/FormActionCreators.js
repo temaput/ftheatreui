@@ -48,5 +48,12 @@ const FormActions = {
       type: ActionTypes.PREVIOUS_STAGE,
     })
   },
+
+  formValidation(errors={}) {
+    Dispatcher.dispatch({
+      type: ActionTypes.FORM_VALIDATION,
+      errors: errors,
+    })
+  },
 };
 export default FormActions;

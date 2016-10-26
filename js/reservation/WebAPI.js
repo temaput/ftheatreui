@@ -12,7 +12,7 @@ class WebAPI {
 
     sendXHR(data(placeId)).then(
       function(response) {
-        ServerActions.receivePerformances(response.data)
+        ServerActions.receiveData('performance', response.data)
       },
       function(error) {
         throw(error);
@@ -27,7 +27,7 @@ class WebAPI {
 
     sendXHR(data(performanceId)).then(
       function(response) {
-        ServerActions.receivePlaces(response.data);
+        ServerActions.receiveData('place', response.data);
       },
       function(error) {
         throw(error);
@@ -38,7 +38,7 @@ class WebAPI {
     const data = Queries.getShowsByPPAndDate;
     sendXHR(data(performanceId, placeId, showDate)).then(
       function(response) {
-        ServerActions.receiveShows(response.data);
+        ServerActions.receiveData('performance', response.data);
       },
       function(error) {
         throw(error);
