@@ -38,7 +38,7 @@ class WebAPI {
     const data = Queries.getShowsByPPAndDate;
     sendXHR(data(performanceId, placeId, showDate)).then(
       function(response) {
-        ServerActions.receiveData('performance', response.data);
+        ServerActions.receiveData('show', response.data);
       },
       function(error) {
         throw(error);

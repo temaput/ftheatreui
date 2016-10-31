@@ -27,9 +27,25 @@ export function getFieldById(fields, id) {
   return fields.find(f => f.id === id);
 }
 export function getCurrentStepFields(steps, fields) {
-    const currentStep = getCurrentStep(steps);
-    return fields.filter(
-      field => field.step === currentStep.number
-    );
+  const currentStep = getCurrentStep(steps);
+  return fields.filter(
+    field => field.step === currentStep.number
+  );
 }
 
+export function getFilterFields(fields) {
+  const filterFields = {place: null, performance: null, show: null};
+  Object.keys(filterFields).forEach(
+    fname => filterFields[fname] = getFieldById(fields, fname)
+  );
+  return filterFields;
+}
+
+export function getFilterFieldsValues(fields) {
+  const filterFields = getFilterFields(fields);
+  const filterFieldsValues = {};
+  Object.keys(filterFields).forEach(
+    fname => filterFieldsValues[fname] = filterFields[fname].value
+  );
+  return filterFieldsValues;
+}

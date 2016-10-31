@@ -4,7 +4,7 @@ import FormActions from '../actions/FormActionCreators.js';
 import ReservationForm from './ReservationForm.js';
 import Stepper from './Stepper.js';
 import {
-  getFixedFields, getCurrentStepFields, getFieldById
+  getFixedFields, getCurrentStepFields, getFieldById, getFilterFieldsValues,
 } from '../dataTraversing.js';
 
 function getState() {
@@ -38,23 +38,8 @@ export default class Main extends React.Component {
     } else {
       FormActions.getPerformances()
     }
-
   }
 
-  getFilterFields() {
-    const filterFields = {place: null, performance: null, show: null};
-    Object.keys(filterFields).forEach(
-      fname => filterFields[fname] = getFieldById(this.state.fields, fname)
-    );
-    return filterFields;
-  }
-
-  getMoreData() {
-    const {place, performance, show} = this.getFilterFields()
-    if (place.value && performance.value && show.choicesObsolete) {
-      FormActions.getShows(performance.value, place.value)
-    }
-  }
 
   getReservationForm() {
     return this.reservationForm;
@@ -62,7 +47,6 @@ export default class Main extends React.Component {
 
   onChange() {
     const newState = getState();
-    this.setState(newState, () => this.getMoreData());
   }
 
   makeReservation(reservationData) {
@@ -84,6 +68,16 @@ export default class Main extends React.Component {
     FormActions.gotoPrevious()
   }
 
+  getChoices() {
+    const {place, performance} = getFilterFieldsValues();
+    if (place && performance) {
+      FormActions.getShows(performance, place);
+    } else if (place) {
+      FormActions.getPerformances(place)
+    } else if (performance) {
+      FormActions.getPlaces(performance)
+    }
+  }
 
   onChangeFormData(itemType, data, event) {
     const fixedFields = getFixedFields(this.state.fields);
@@ -95,14 +89,8 @@ export default class Main extends React.Component {
 
     switch (itemType) {
       case 'performance':
-        if (!placeIsFixed) {
-          FormActions.getPlaces(data)
-        }
-        break;
       case 'place':
-        if (!performanceIsFixed) {
-          FormActions.getPerformances(data)
-        }
+        this.getChoices();
         break;
       case 'show':
         // go to step 2
