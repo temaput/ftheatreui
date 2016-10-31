@@ -23,6 +23,8 @@ export default class Main extends React.Component {
   }
 
   getInitialData() {
+    FormActions.getInitialData(document.URL);
+      /*
     if (this.props.prescribedData) {
       const {currents, placesFirst} = this.props.prescribedData;
       if (currents) {
@@ -38,6 +40,7 @@ export default class Main extends React.Component {
     } else {
       FormActions.getPerformances()
     }
+    */
   }
 
 

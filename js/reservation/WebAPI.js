@@ -5,6 +5,10 @@ import {sendXHR} from '../utils/utils.js';
 
 
 class WebAPI {
+  getFormFields() {
+  }
+  getFormSteps() {
+  }
   getPerformances(placeId) {
     const data = (
       placeId ? Queries.performancesByPlace: Queries.scheduledPerformances
