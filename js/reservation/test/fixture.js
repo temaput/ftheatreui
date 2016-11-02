@@ -107,3 +107,16 @@ export const dataStore = {
   ],
 }
 
+export const formMock = `
+<html>
+  <body>
+    <form action="#" id="mock-form">
+      <div>
+        <label htmlFor="email"></label>
+        <input id="email" type="email" required>
+      </div>
+    </form>
+  </body>
+</html>
+`;
+export const formMockId = 'mock-form';

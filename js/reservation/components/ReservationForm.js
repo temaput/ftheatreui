@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import TextField from '../../utils/MDLComponents/TextField.js';
 import SelectField from '../../utils/MDLComponents/SelectField.js';
 import FormActions from '../actions/FormActionCreators.js';
-import {validateFormField} from '../../utils/ValidationUtils.js';
+import {validateFormField} from '../validationUtils.js';
 import {groupFieldsBySteps, getCurrentStepFields} from '../dataTraversing.js';
 
 function _processId(id) {
@@ -48,17 +48,16 @@ export default class ReservationForm extends React.Component {
 
   onBlur(fname, event) {
     //validation here
-    const errors = {};
-    errors[fname] = this.validateFormField(fname);
-    FormActions.formValidation(errors)
+    FormActions.formValidation(this.validateFormField(fname))
   }
 
   validateCurrentStepFields() {
     const {steps, fields} = this.props;
-
     const currentFields = getCurrentStepFields(steps, fields);
     const errors = {};
-    currentFields.forEach(f => errors[f.id] = this.validateFormField(f.id));
+    currentFields.forEach(
+      f => Object.assign(errors, this.validateFormField(f.id))
+    );
     return errors;
 
   }
@@ -67,7 +66,9 @@ export default class ReservationForm extends React.Component {
     const formField = this.formFields[fname];
     const {fieldNode} = formField;
     const {customErrorMessages} = this.props.fields[fname];
-    return validateFormField(fieldNode, customErrorMessages);
+    const errors = {};
+    errors[fname] = validateFormField(fieldNode, customErrorMessages);
+    return errors;
   }
 
   renderField(field) {

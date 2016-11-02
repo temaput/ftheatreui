@@ -17,5 +17,7 @@ export function  validateFormField(fieldNode, customErrorMessages={}) {
     } else {
       return fieldNode.validationMessage
     }
+  } else {
+    return null;
   }
 }

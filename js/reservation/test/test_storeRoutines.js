@@ -14,18 +14,17 @@ describe('Manipulating data in Store', function() {
   });
 
   describe('Set item value', function() {
-    const fnames = ['place',  'email', 'childrenSeats']
     const testSample = {
       place: 3,
       email: 'tt@mail.ru',
-      childSeats: 2,
+      childrenSeats: 2,
     };
 
     it('sets value of place/email/childSeats field', function() {
-      fnames.forEach(fname =>
+      Object.keys(testSample).forEach(fname =>
         store.setItem({itemType: fname, data: testSample[fname]})
       );
-      fnames.forEach(fname => {
+      Object.keys(testSample).forEach(fname => {
         const field = dtr.getFieldById(fields, fname);
         assert.strictEqual(field.value, testSample[fname], 
           "value is set appropriately");
@@ -42,7 +41,7 @@ describe('Manipulating data in Store', function() {
     const fnames = Object.keys(testSample);
     it('updates choices of places/performances/shows', function() {
       fnames.forEach(fname =>
-        store.receiveItems({itemType: fname, items: testSample[fname]})
+        store.receiveItems({itemType: fname, items: testSample})
       );
       fnames.forEach(fname => {
         const field = dtr.getFieldById(fields, fname);
@@ -55,8 +54,10 @@ describe('Manipulating data in Store', function() {
 
   describe('Provide fields and steps to components', function() {
     it('provides fields', function() {
+      assert.deepEqual(fields, store.getFields(), "Provide fields");
     });
     it('provides steps', function() {
+      assert.deepEqual(steps, store.getSteps(), "Provide steps");
     });
 
   });
@@ -64,10 +65,68 @@ describe('Manipulating data in Store', function() {
 
   describe('Manipulate steps', function() {
     it('shifts from first step to second', function() {
+      store.gotoNext();
+      const currentStep = dtr.getCurrentStep(steps);
+      assert.strictEqual(currentStep.number, 2, "current step is second");
     });
     it('shifts from second back to first', function() {
+      store.gotoPrevious();
+      const currentStep = dtr.getCurrentStep(steps);
+      assert.strictEqual(currentStep.number, 1, "current step is first");
     });
     it('does not go to previous from first', function() {
+      store.gotoPrevious();
+      const currentStep = dtr.getCurrentStep(steps);
+      assert.strictEqual(currentStep.number, 1, "current step is first");
+    });
+  });
+
+  describe('Provide errors to components (form)', function() {
+    const errors = {
+      place: "Place error",
+      email: "Email error",
+      childrenSeats: "Children seats error",
+    }
+    const cleanErrors = {
+      place: null,
+      email: null,
+      childrenSeats: null,
+    }
+    it('provides errors on place/email/childrenSeats', function() {
+      store.processFormValidation({errors: errors});
+      Object.keys(errors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.strictEqual(field.error, errors[fname], "Error is in place");
+      });
+    });
+    it('clears errors on place/email/childrenSeats', function() {
+      store.processFormValidation({errors: errors});
+      Object.keys(errors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.strictEqual(field.error, errors[fname], "Error is in place");
+      });
+      store.processFormValidation({errors: cleanErrors});
+      Object.keys(cleanErrors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.isNull(field.error, "Error is cleaned");
+      });
+    });
+    it('does nothing if empty errors dict supplied', function() {
+      store.processFormValidation({errors: errors});
+      Object.keys(errors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.strictEqual(field.error, errors[fname], "Error is in place");
+      });
+      store.processFormValidation({errors: cleanErrors});
+      Object.keys(cleanErrors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.isNull(field.error, "Error is cleaned");
+      });
+      store.processFormValidation({errors: cleanErrors});
+      Object.keys(cleanErrors).forEach(fname => {
+        const field = dtr.getFieldById(fields, fname);
+        assert.isNull(field.error, "Error is cleaned");
+      });
     });
   });
 

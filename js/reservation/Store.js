@@ -33,7 +33,7 @@ class Store extends events.EventEmitter {
           this.gotoPrevious()
           break;
         case ActionTypes.FORM_VALIDATION:
-          this.processFormValidation(action.errors);
+          this.processFormValidation(action);
           break;
         default:
           //no op
@@ -42,7 +42,7 @@ class Store extends events.EventEmitter {
 
   }
 
-  processFormValidation(errors) {
+  processFormValidation({errors}) {
 
     Object.keys(errors).forEach(
       fname => {
@@ -70,21 +70,25 @@ class Store extends events.EventEmitter {
     const {steps} = this._dataStore;
     const currentStep = getCurrentStep(steps);
     const nextStep = getNextStep(steps);
-    currentStep.isCurrent = false;
-    currentStep.isComplete = true;
-    nextStep.isCurrent = true;
+    if (nextStep && currentStep) {
+      currentStep.isCurrent = false;
+      currentStep.isComplete = true;
+      nextStep.isCurrent = true;
+      this.emitChange();
+    }
 
-    this.emitChange();
   }
 
   gotoPrevious() {
     const {steps} = this._dataStore;
     const currentStep = getCurrentStep(steps);
     const previousStep = getPreviousStep(steps);
-    currentStep.isCurrent = false;
-    previousStep.isCurrent = true;
-    previousStep.isComplete = false;
-    this.emitChange();
+    if (currentStep && previousStep) {
+      currentStep.isCurrent = false;
+      previousStep.isCurrent = true;
+      previousStep.isComplete = false;
+      this.emitChange();
+    }
   }
 
   setItem({itemType, data}) {

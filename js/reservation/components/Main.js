@@ -83,13 +83,7 @@ export default class Main extends React.Component {
   }
 
   onChangeFormData(itemType, data, event) {
-    const fixedFields = getFixedFields(this.state.fields);
-    const performanceIsFixed = fixedFields.some(f => f.name === 'performance');
-    const placeIsFixed = fixedFields.some(f => f.name === 'place');
-
     FormActions.changeFormData(itemType, data, event)
-     
-
     switch (itemType) {
       case 'performance':
       case 'place':
