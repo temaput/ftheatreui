@@ -8,119 +8,11 @@ import events  from 'events';
 
 const CHANGE_EVENT = 'change';
 
-const _dataStore = {
-  fields: [
-    {
-      id: 'performance',
-      hidden: true,
-      value: "",
-      customProps: {
-        stepNumber: 1,
-        isFixed: true,
-        isShowChanger: true,
-      },
-    },
-    {
-      id: 'place',
-      options: [],
-      value: "",
-      required: true,
-      label: 'Выберите спектакль',
-      error: null,
-      customProps: {
-        stepNumber: 1,
-        isFixed: false,
-        isShowChanger: true,
-      },
-      customErrorMessages: {valueMissing: 'Обязательно выберите площадку'},
-    },
-    {
-      id: 'show',
-      options: [],
-      value: "",
-      required: true,
-      label: 'Выберите показ',
-      error: null,
-      customProps: {
-        stepNumber: 1,
-        isFixed: false,
-        choicesObsolete: false,
-      },
-      customErrorMessages: {valueMissing: 'Обязательно выберите показ'},
-    },
-    {
-      id: 'email', label: "email", type: "email", required: true,
-      value: "",
-      customProps: {
-        stepNumber: 2,
-      },
-    }, 
-    {
-      id: 'firstName', label: "Имя",
-      value: "",
-      customProps: {
-        stepNumber: 2,
-      },
-    },
-    {
-      id: 'lastName', label: "Фамилия",
-      value: "",
-      customProps: {
-        stepNumber: 2,
-      },
-    },
-    {
-      id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
-      value: "",
-      customProps: {
-        stepNumber: 2,
-      },
-    }, 
-    {
-      id: 'childrenSeats', value: 1, type: "number", label: "Дети",
-      customProps: {
-        stepNumber: 3,
-      },
-    },
-    {
-      id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
-      customProps: {
-        stepNumber: 3,
-      },
-    }
-  ],
-  steps: [
-    {
-      number: 1,
-      isCurrent: true,
-      isComplete: false,
-      label: "Выберите сеанс",
-      hasFinish: false,
-      hasPrevious: false,
-    },
-    {
-      number: 2,
-      isCurrent: false,
-      isComplete: false,
-      label: "Укажите контактные данные",
-      hasFinish: false,
-      hasPrevious: true,
-    },
-    {
-      number: 3,
-      isCurrent: false,
-      isComplete: false,
-      label: "Подтверждение брони",
-      hasFinish: true,
-      hasPrevious: true,
-    },
-  ],
-}
-
 
 class Store extends events.EventEmitter {
-  constructor(props) {
-    super(props);
+  constructor(storage) {
+    super();
+    this._dataStore = storage;
 
     Dispatcher.register(action => {
       switch(action.type) {
@@ -130,7 +22,7 @@ class Store extends events.EventEmitter {
         case ActionTypes.MAKE_RESERVATION:
           break;
         case ActionTypes.RECEIVE_DATA:
-          this.receiveItems(action.itemType, action.items);
+          this.receiveItems(action);
           break;
         case ActionTypes.RECEIVE_RESERVATION_RESPONCE:
           break;
@@ -175,7 +67,7 @@ class Store extends events.EventEmitter {
 
   
   gotoNext() {
-    const {steps} = _dataStore;
+    const {steps} = this._dataStore;
     const currentStep = getCurrentStep(steps);
     const nextStep = getNextStep(steps);
     currentStep.isCurrent = false;
@@ -186,7 +78,7 @@ class Store extends events.EventEmitter {
   }
 
   gotoPrevious() {
-    const {steps} = _dataStore;
+    const {steps} = this._dataStore;
     const currentStep = getCurrentStep(steps);
     const previousStep = getPreviousStep(steps);
     currentStep.isCurrent = false;
@@ -195,20 +87,17 @@ class Store extends events.EventEmitter {
     this.emitChange();
   }
 
-  setItem({itemType, data, event}) {
+  setItem({itemType, data}) {
     const field = this.getFieldById(itemType);
     field.value = data;
     if (field.showChanger) {
       this.getFieldById('show').choicesObsolete = true;
     }
-    if (event) {
-      this.validateFormField(field, event.target);
-    }
     this.emitChange();
   }
 
 
-  receiveItems(itemType, items) {
+  receiveItems({itemType, items}) {
     const field = this.getFieldById(itemType);
     field.options = items[itemType];
     //check that we can preserve our current among new choices
@@ -225,16 +114,16 @@ class Store extends events.EventEmitter {
 
 
   getFieldById(id) {
-    return getFieldById(_dataStore.fields, id) 
+    return getFieldById(this._dataStore.fields, id) 
   }
 
   getFields() {
-    return _dataStore.fields
+    return this._dataStore.fields
   }
   getSteps() {
-    return _dataStore.steps
+    return this._dataStore.steps
   }
 
 }
 
-export default new Store();
+export default Store;

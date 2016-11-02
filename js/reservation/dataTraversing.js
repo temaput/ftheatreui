@@ -1,11 +1,18 @@
 export function groupFieldsBySteps(steps, fields) {
-  return steps.map(s => {
-    const {number} = s;
-    return {step: s, fields: fields.filter(
-      f => f.customProps.stepNumber === number
-    )}
-  });
+  return steps.map(s =>  ({ step: s, fields: filterFieldsByStep(fields, s) }));
 }
+
+export function getCurrentStepFields(steps, fields) {
+  const currentStep = getCurrentStep(steps);
+  return filterFieldsByStep(fields, currentStep);
+}
+
+function filterFieldsByStep(fields, step) {
+  return fields.filter(
+      f => f.customProps.stepNumber === step.number
+  )
+}
+
 export function getFixedFields(fields) {
   return fields.filter(f => f.customProps.isFixed === true)
 }
@@ -25,12 +32,6 @@ export function getPreviousStep(steps) {
 }
 export function getFieldById(fields, id) {
   return fields.find(f => f.id === id);
-}
-export function getCurrentStepFields(steps, fields) {
-  const currentStep = getCurrentStep(steps);
-  return fields.filter(
-    field => field.step === currentStep.number
-  );
 }
 
 export function getFilterFields(fields) {

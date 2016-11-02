@@ -1,14 +1,17 @@
 import { assert } from 'chai';
 import jsdom from 'jsdom';
 
-import Gallery from '../scripts/Gallery.js';
+import Gallery from '../Gallery.js';
 import { thumbsMock } from './test_fixtures.js';
 
 describe('Gallery', function() {
   const doc = jsdom.jsdom(thumbsMock);
   const galleryAnchor = doc.querySelector('.gallery');
   const thumbsSelector = 'figure.gallery-thumb > a';
-  const gallery = new Gallery(galleryAnchor, {});
+  const opts = {
+    thumbsSelector: thumbsSelector,
+  };
+  const gallery = new Gallery(galleryAnchor, {}, opts);
   before(function() {
     global.document = doc;
     global.window = doc.defaultView;

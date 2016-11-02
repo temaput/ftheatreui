@@ -34,10 +34,10 @@ function getThumbBoundsFnClosure(galleryAnchor, thumbsSelector) {
 
 
 class Gallery {
-  constructor(galleryAnchor, tools, opts = DEFAULTS) {
+  constructor(galleryAnchor, tools, opts) {
     this.galleryAnchor = galleryAnchor;
     this.tools = tools;
-    this.opts = opts;
+    this.opts = Object.assign({}, DEFAULTS, opts);
   }
 
   init() {

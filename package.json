@@ -4,7 +4,7 @@
   "description": "First theatre site on wagtail cms",
   "main": "main.js",
   "scripts": {
-    "test": "mocha  --compilers js:babel-register  \"uifactory/test/**/*.js\"",
+    "test": "mocha  --compilers js:babel-register  \"./js/*/test/**/*.js\"",
     "test:watch": "npm run test -- --watch",
     "build": "webpack",
     "start": "npm run build -- -dw"
