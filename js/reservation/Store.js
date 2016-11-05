@@ -1,7 +1,8 @@
 import Dispatcher from './Dispatcher.js';
 import {ActionTypes} from './constants.js';
 import {
-  getCurrentStep, getNextStep, getPreviousStep, getFieldById
+  getCurrentStep, getNextStep, getPreviousStep, getObjectFields, getFieldById,
+    getCurrentStepObjects,
 } from './dataTraversing.js';
 
 import events  from 'events';
@@ -46,7 +47,7 @@ class Store extends events.EventEmitter {
 
     Object.keys(errors).forEach(
       fname => {
-        const field = this.getFieldById(fname);
+        const field = this.getFieldById('ReservationForm', fname);
         field.error = errors[fname];
       }
     );
@@ -91,41 +92,32 @@ class Store extends events.EventEmitter {
     }
   }
 
-  setItem({itemType, data}) {
-    const field = this.getFieldById(itemType);
+  setItem({objType, itemType, data}) {
+    const field = this.getFieldById(objType, itemType);
     field.value = data;
-    if (field.showChanger) {
-      this.getFieldById('show').choicesObsolete = true;
-    }
     this.emitChange();
   }
 
 
-  receiveItems({itemType, items}) {
-    const field = this.getFieldById(itemType);
+  receiveItems({objType, itemType, items}) {
+    const field = this.getFieldById(objType, itemType);
     field.options = items[itemType];
-    //check that we can preserve our current among new choices
-    if (field.value &&
-          field.options.every(el => el !== field.value)
-    ) {
-      field.value = null
-    }
-    if (itemType === 'show') {
-      this.getFieldById('show').choicesObsolete = false;
-    }
+    field.value = null;
     this.emitChange();
   }
 
 
-  getFieldById(id) {
-    return getFieldById(this._dataStore.fields, id) 
+  getFieldById(objName, id) {
+    const fields = getObjectFields(this._dataStore, objName);
+    return getFieldById(fields, id) 
   }
 
-  getFields() {
-    return this._dataStore.fields
+  getData() {
+    return getCurrentStepObjects(this._dataStore);
   }
+
   getSteps() {
-    return this._dataStore.steps
+    return [...this._dataStore.steps]
   }
 
 }

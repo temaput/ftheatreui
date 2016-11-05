@@ -3,10 +3,21 @@ import {dataStore} from './fixture.js';
 import * as dtr from '../dataTraversing.js';
 
 describe('Traversing data store', function() {
-  const {fields, steps} = dataStore;
-  describe('getting field by id', function() {
+
+  let _dataStore, steps=1;
+
+  beforeEach(function() {
+    _dataStore = Object.assign({}, dataStore);
+    steps = _dataStore.steps;
+  });
+
+  describe('getting field by object/id', function() {
     it('should get field by its id', function() {
-      const performanceField = dtr.getFieldById(fields, 'performance');
+      const scheduleFilterFormFields = dtr.getObjectFields(
+        _dataStore, "ScheduleFilterForm");
+      const performanceField = dtr.getFieldById(
+        scheduleFilterFormFields, 'performance'
+      );
       assert.isOk(performanceField, "Should be truthy");
       assert.equal(performanceField.id, 'performance',
         'Should have the very same id');
@@ -16,14 +27,13 @@ describe('Traversing data store', function() {
     'getting filter fields', 
     function() {
       it('should get place, performance and show as fields', function() {
-        const {place, performance, show} = dtr.getFilterFields(fields);
+        const {place, performance} = dtr.getFilterFields(_dataStore);
         assert.isOk(place, "Place is ok");
         assert.isOk(performance, "Performance is ok");
-        assert.isOk(show, "Show is ok");
       });
       it('should get corresponding values', function() {
-        const filterFields = dtr.getFilterFields(fields);
-        const filterFieldsValues = dtr.getFilterFieldsValues(fields);
+        const filterFields = dtr.getFilterFields(_dataStore);
+        const filterFieldsValues = dtr.getFilterFieldsValues(_dataStore);
         Object.keys(filterFields).forEach(
           fname => assert.equal(
             filterFields[fname].value,
@@ -35,57 +45,78 @@ describe('Traversing data store', function() {
     }
   );
   describe(
-    'getting current step number and fields',
+    'getting current step number and objects',
     function() {
-      const currentStep = dtr.getCurrentStep(steps);
-      const nextStep = dtr.getNextStep(steps);
-      const previousStep = dtr.getPreviousStep(steps);
       it('should get first step as current', function() {
+        const currentStep = dtr.getCurrentStep(steps);
         assert.equal(currentStep.number, 1, 'current step is first');
       });
       it('should get second step as next', function() {
+        const nextStep = dtr.getNextStep(steps);
         assert.equal(nextStep.number, 2, 'next step is second');
       });
       it('should get falsy as previous', function() {
+        const previousStep = dtr.getPreviousStep(steps);
         assert.isNotOk(previousStep, 'no previous step');
       });
-      it('should get performance, place and show as current step fields', 
-        function() {
-          const currentStepFields = dtr.getCurrentStepFields(steps, fields);
-          assert.lengthOf(currentStepFields, 3, "should be 3 fields");
-          assert(
-            currentStepFields.every(
-              f => ['performance', 'place', 'show'].some(
-                fname => fname === f.id)
-            ),
-            "fields must be performance/place/show"
-          );
-        }
-      );
       
     }
   );
 
   describe(
-    'grouping fields by steps',
+    'getting step objects and fields',
     function() {
-      const testSample = [
-        {stepNumber: 1, fieldNames: ['performance', 'place', 'show']},
-        {stepNumber: 2, fieldNames: ['email', 'firstName', 'lastName', 'tel']},
-        {stepNumber: 3, fieldNames: ['childrenSeats', 'adultSeats']},
+      const firstStepObjectsSample = [
+        {
+          type: 'ScheduleFilterForm',
+          props: {
+            fields: [
+              {
+                id: 'performance',
+                hidden: true,
+                value: "1",
+              },
+              {
+                id: 'place',
+                options: [],
+                value: "2",
+                required: true,
+                label: 'Выберите спектакль',
+                error: null,
+                customErrorMessages: {
+                  valueMissing: 'Обязательно выберите площадку'
+                },
+              },
+            ],
+          },
+        },
+        {
+          type: 'ShowSelect',
+          props: {
+            fields: [
+              {
+                id: 'show',
+                options: [],
+                value: "3",
+                required: true,
+                label: 'Выберите показ',
+                error: null,
+                customErrorMessages: {
+                  valueMissing: 'Обязательно выберите показ'
+                },
+              },
+            ],
+          }
+        },
       ]
-      it('should compile appropriate structure', function() {
-        const fieldsBySteps = dtr.groupFieldsBySteps(steps, fields);
-        const test = fieldsBySteps.map(
-          stepFields => ({
-            stepNumber: stepFields.step.number,
-            fieldNames: stepFields.fields.map(
-              field => field.id
-            ),
-          })
-        );
-        assert.deepEqual(test, testSample, 'structure is appropriate');
-      });
+      it('should get first field objects (ScheduleFilterForm/ShowSelect)', 
+        function() {
+          const currentStepObjects = dtr.getCurrentStepObjects(_dataStore);
+          assert.lengthOf(currentStepObjects, 2, "should be 2 objects");
+          assert.deepEqual(firstStepObjectsSample, currentStepObjects,
+            "first step objects ok");
+        }
+      );
     }
   );
 

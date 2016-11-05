@@ -4,63 +4,74 @@ import * as dtr from '../dataTraversing.js';
 import Store from '../Store.js';
 
 describe('Manipulating data in Store', function() {
-  let store, fields, steps;
+  let _dataStore, store,  steps, fields;
 
   beforeEach(function() {
-    const _dataStore = Object.assign({}, dataStore);
+    _dataStore = JSON.parse(JSON.stringify(dataStore));
     store = new Store(_dataStore);
-    fields = _dataStore.fields;
     steps = _dataStore.steps;
+    console.log(dataStore.ScheduleFilterForm.fields[0].options);
+    console.log(dataStore.ReservationForm.fields[0].value);
   });
 
   describe('Set item value', function() {
     const testSample = {
-      place: 3,
-      email: 'tt@mail.ru',
-      childrenSeats: 2,
+      ScheduleFilterForm: {place: 3},
+      ReservationForm: {
+        email: 'tt@mail.ru',
+        childrenSeats: 2,
+      }
     };
 
     it('sets value of place/email/childSeats field', function() {
-      Object.keys(testSample).forEach(fname =>
-        store.setItem({itemType: fname, data: testSample[fname]})
+      Object.keys(testSample).forEach(objname =>
+        Object.keys(testSample[objname]).forEach(fname =>
+          store.setItem({
+            objType: objname, itemType: fname, data: testSample[objname][fname]
+          })
+        )
       );
-      Object.keys(testSample).forEach(fname => {
-        const field = dtr.getFieldById(fields, fname);
-        assert.strictEqual(field.value, testSample[fname], 
-          "value is set appropriately");
-      });
+      Object.keys(testSample).forEach(objname =>
+        Object.keys(testSample[objname]).forEach(fname => {
+          const fields = dtr.getObjectFields(_dataStore, objname);
+          const field = dtr.getFieldById(fields, fname);
+          assert.strictEqual(field.value, testSample[objname][fname], 
+            "value is set appropriately");
+        })
+      );
     });
   });
 
   describe('Update choices with new data from server', function() {
     const testSample = {
-      place: [1, 2, 3],
-      performance: [11, 22, 33],
-      show: [555, 444, 333, 222, 111],
+      ScheduleFilterForm: {
+        place: [1, 2, 3],
+        performance: [11, 22, 33],
+      },
+      ShowSelect: {
+        show: [555, 444, 333, 222, 111],
+      },
     };
-    const fnames = Object.keys(testSample);
+    const objnames = Object.keys(testSample);
     it('updates choices of places/performances/shows', function() {
-      fnames.forEach(fname =>
-        store.receiveItems({itemType: fname, items: testSample})
+      objnames.forEach(objname =>
+        Object.keys(testSample[objname]).forEach(fname =>
+          store.receiveItems({objType: objname,
+            itemType: fname, items: testSample[objname]})
+        )
       );
-      fnames.forEach(fname => {
-        const field = dtr.getFieldById(fields, fname);
-        assert.isOk(field.options);
-        assert.deepEqual(field.options, testSample[fname]);
-      });
+      objnames.forEach(objname =>
+        Object.keys(testSample[objname]).forEach(fname => {
+          const fields = dtr.getObjectFields(_dataStore, objname);
+          const field = dtr.getFieldById(fields, fname);
+          assert.isOk(field.options);
+          assert.deepEqual(field.options, testSample[objname][fname]);
+        })
+      );
 
     });
   });
 
-  describe('Provide fields and steps to components', function() {
-    it('provides fields', function() {
-      assert.deepEqual(fields, store.getFields(), "Provide fields");
-    });
-    it('provides steps', function() {
-      assert.deepEqual(steps, store.getSteps(), "Provide steps");
-    });
-
-  });
 
 
   describe('Manipulate steps', function() {
@@ -83,18 +94,17 @@ describe('Manipulating data in Store', function() {
 
   describe('Provide errors to components (form)', function() {
     const errors = {
-      place: "Place error",
       email: "Email error",
       childrenSeats: "Children seats error",
     }
     const cleanErrors = {
-      place: null,
       email: null,
       childrenSeats: null,
     }
     it('provides errors on place/email/childrenSeats', function() {
       store.processFormValidation({errors: errors});
       Object.keys(errors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.strictEqual(field.error, errors[fname], "Error is in place");
       });
@@ -102,11 +112,13 @@ describe('Manipulating data in Store', function() {
     it('clears errors on place/email/childrenSeats', function() {
       store.processFormValidation({errors: errors});
       Object.keys(errors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.strictEqual(field.error, errors[fname], "Error is in place");
       });
       store.processFormValidation({errors: cleanErrors});
       Object.keys(cleanErrors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.isNull(field.error, "Error is cleaned");
       });
@@ -114,20 +126,148 @@ describe('Manipulating data in Store', function() {
     it('does nothing if empty errors dict supplied', function() {
       store.processFormValidation({errors: errors});
       Object.keys(errors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.strictEqual(field.error, errors[fname], "Error is in place");
       });
       store.processFormValidation({errors: cleanErrors});
       Object.keys(cleanErrors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.isNull(field.error, "Error is cleaned");
       });
       store.processFormValidation({errors: cleanErrors});
       Object.keys(cleanErrors).forEach(fname => {
+        const fields = dtr.getObjectFields(_dataStore, "ReservationForm");
         const field = dtr.getFieldById(fields, fname);
         assert.isNull(field.error, "Error is cleaned");
       });
     });
   });
 
+  describe('Provide steps and data to components', function() {
+    const testSample = [
+      [
+        {
+          type: 'ScheduleFilterForm',
+          props: {
+            fields: [
+              {
+                id: 'performance',
+                hidden: true,
+                value: "1",
+              },
+              {
+                id: 'place',
+                options: [],
+                value: "2",
+                required: true,
+                label: 'Выберите спектакль',
+                error: null,
+                customErrorMessages: {
+                  valueMissing: 'Обязательно выберите площадку'
+                },
+              },
+            ],
+          },
+        },
+        {
+          type: 'ShowSelect',
+          props: {
+            fields: [
+              {
+                id: 'show',
+                options: [],
+                value: "3",
+                required: true,
+                label: 'Выберите показ',
+                error: null,
+                customErrorMessages: {
+                  valueMissing: 'Обязательно выберите показ'
+                },
+              },
+            ],
+          }
+        },
+      ],
+      [
+        {
+          type: 'ReservationForm',
+          props: {
+            fields: [
+              {
+                id: 'email', label: "email", type: "email", required: true,
+                value: "",
+              }, 
+              {
+                id: 'firstName', label: "Имя",
+                value: "",
+              },
+              {
+                id: 'lastName', label: "Фамилия",
+                value: "",
+              },
+              {
+                id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
+                value: "",
+              }, 
+              {
+                id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+                hidden: true,
+              },
+              {
+                id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+                hidden: true,
+              }
+            ],
+          },
+        },
+      ],
+      [
+        {
+          type: 'ReservationForm',
+          props: {
+            fields: [
+              {
+                id: 'email', label: "email", type: "email", required: true,
+                value: "",
+                hidden: true,
+              }, 
+              {
+                id: 'firstName', label: "Имя",
+                value: "",
+                hidden: true,
+              },
+              {
+                id: 'lastName', label: "Фамилия",
+                value: "",
+                hidden: true,
+              },
+              {
+                id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
+                value: "",
+                hidden: true,
+              }, 
+              {
+                id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+              },
+              {
+                id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+              }
+            ],
+          },
+        },
+      ],
+    ]
+    it('provides steps', function() {
+      assert.deepEqual(steps, store.getSteps(), "Provide steps");
+    });
+    it('provides stepObjects for each step ', function() {
+      assert.deepEqual(store.getData(), testSample[0], "Provide objects 1");
+      store.gotoNext();
+      assert.deepEqual(store.getData(), testSample[1], "Provide objects 2");
+      store.gotoNext();
+      assert.deepEqual(store.getData(), testSample[2], "Provide objects 3");
+    });
+  });
 });

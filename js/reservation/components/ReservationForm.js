@@ -4,11 +4,8 @@ import TextField from '../../utils/MDLComponents/TextField.js';
 import SelectField from '../../utils/MDLComponents/SelectField.js';
 import FormActions from '../actions/FormActionCreators.js';
 import {validateFormField} from '../validationUtils.js';
-import {groupFieldsBySteps, getCurrentStepFields} from '../dataTraversing.js';
+import {processId} from '../dataTraversing.js';
 
-function _processId(id) {
-  return Number(id)
-}
 function _optionTitle(itemType, option) {
   switch (itemType) {
     case 'performance':
@@ -43,7 +40,7 @@ export default class ReservationForm extends React.Component {
   }
 
   onChoose(itemType, event) {
-    this.props.onChange(itemType, _processId(event.target.value))
+    this.props.onChange(itemType, processId(event.target.value))
   }
 
   onBlur(fname, event) {
@@ -51,15 +48,12 @@ export default class ReservationForm extends React.Component {
     FormActions.formValidation(this.validateFormField(fname))
   }
 
-  validateCurrentStepFields() {
-    const {steps, fields} = this.props;
-    const currentFields = getCurrentStepFields(steps, fields);
+  validate() {
     const errors = {};
-    currentFields.forEach(
-      f => Object.assign(errors, this.validateFormField(f.id))
+    this.props.fields.forEach(
+      f => !f.hidden && Object.assign(errors, this.validateFormField(f.id))
     );
     return errors;
-
   }
 
   validateFormField(fname) {
@@ -95,34 +89,11 @@ export default class ReservationForm extends React.Component {
     return formField;
   }
 
-  renderFieldsBySteps() {
-    const {steps, fields} = this.props;
-    const fieldsBySteps = groupFieldsBySteps(steps, fields);
-
-    return fieldsBySteps.map(step => {
-      const fields = step.fields.map(
-        (field, key) => {
-          if (!field.hidden) {
-            return <div key={key}>{this.renderField(field)}</div>
-          }
-        }
-      )
-      const stepClass = classNames([
-        'reservation-form__step',
-        {'reservation-form__step--hidden': !step.step.isCurrent},
-      ]);
-      return (
-        <div key={step.step.number} className={stepClass}>
-          {fields}
-        </div>
-      )
-    });
-  }
-
   render() {
+    const fields = this.props.fields.map(f => this.renderField(f));
     return (
       <form name="reservation-form">
-        {this.renderFieldsBySteps()}
+        {fields}
       </form>
     )
   }

@@ -1,11 +1,10 @@
 import React from 'react';
 import Store from '../Store.js';
 import FormActions from '../actions/FormActionCreators.js';
-import ReservationForm from './ReservationForm.js';
 import Stepper from './Stepper.js';
-import {
-  getFixedFields, getCurrentStepFields, getFieldById, getFilterFieldsValues,
-} from '../dataTraversing.js';
+import ReservationForm from './ReservationForm.js';
+import ScheduleFilterForm from './ScheduleFilterForm.js';
+import ShowSelect from './ShowSelect.js';
 
 function getState() {
   return {
@@ -48,8 +47,29 @@ export default class Main extends React.Component {
     return this.reservationForm;
   }
 
+  getFilterForm() {
+    return this.filterForm;
+  }
+
+  onScheduleFilterUpdate({performance, place}) {
+    if (place && performance) {
+      FormActions.getShows(performance, place);
+    } else if (place) {
+      FormActions.getPerformances(place)
+    } else if (performance) {
+      FormActions.getPlaces(performance)
+    }
+  }
+
+  onShowChoose(showId) {
+    if (showId) {
+        FormActions.gotoNext();
+    }
+  }
+
   onChange() {
     const newState = getState();
+    this.setState(newState);
   }
 
   makeReservation(reservationData) {
@@ -58,7 +78,7 @@ export default class Main extends React.Component {
 
   gotoNext() {
     //validation first
-    const errors = this.getReservationForm().validateCurrentStepFields();
+    const errors = this.getReservationForm().validate();
     FormActions.formValidation(errors)
     if (Array.prototype.every(
       Object.keys(errors), fname => errors[fname]===null
@@ -71,16 +91,6 @@ export default class Main extends React.Component {
     FormActions.gotoPrevious()
   }
 
-  getChoices() {
-    const {place, performance} = getFilterFieldsValues();
-    if (place && performance) {
-      FormActions.getShows(performance, place);
-    } else if (place) {
-      FormActions.getPerformances(place)
-    } else if (performance) {
-      FormActions.getPlaces(performance)
-    }
-  }
 
   onChangeFormData(itemType, data, event) {
     FormActions.changeFormData(itemType, data, event)
@@ -108,6 +118,31 @@ export default class Main extends React.Component {
     Store.removeChangeListener(this.onChange.bind(this));
   }
 
+
+  renderStepChildren() {
+    const subElementsTemplate = {
+      ReservationForm: {
+        type: ReservationForm,
+        additionalProps: {
+            onChange: this.onChangeFormData.bind(this),
+            onSubmit: this.makeReservation.bind(this),
+            ref: el => this.reservationForm = el
+        },
+      },
+      ScheduleFilterForm: 
+        {type: ScheduleFilterForm,},
+      ShowSelect: {type: ShowSelect,},
+    }
+    return this.state.stepData.map(el => {
+      const subElement = subElementsTemplate[el];
+      return React.createElement(
+        subElement.type,
+        {...el.props, ...subElement.additionalProps},
+      );
+    });
+
+  }
+
   render() {
     return (
       <div>
@@ -116,13 +151,7 @@ export default class Main extends React.Component {
           gotoNext={this.gotoNext.bind(this)}
           gotoPrevious={this.gotoPrevious.bind(this)}
         >
-          <ReservationForm
-            steps={this.state.steps}
-            fields={this.state.fields}
-            onChange={this.onChangeFormData.bind(this)}
-            onSubmit={this.makeReservation.bind(this)}
-            ref={el => this.reservationForm = el}
-          />
+          {this.renderStepChildren()}
         </Stepper>
       </div>
     )
