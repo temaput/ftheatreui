@@ -1,11 +1,131 @@
-export const dataStore = {
-  ScheduleFilterForm: {
-    fields: [
+export const testSamples = {
+  stepsData: [
+    [
       {
-        id: 'performance',
-        value: "1",
+        type: 'ScheduleFilterForm',
+        props: {
+          fields: [
+            {
+              id: 'performance',
+              hidden: true,
+              value: "1",
+            },
+            {
+              id: 'place',
+              options: [],
+              value: "2",
+              required: true,
+              label: 'Выберите спектакль',
+              error: null,
+              customErrorMessages: {
+                valueMissing: 'Обязательно выберите площадку'
+              },
+            },
+          ],
+        },
       },
       {
+        type: 'ShowSelect',
+        props: {
+          fields: [
+            {
+              id: 'show',
+              options: [],
+              value: "3",
+              required: true,
+              label: 'Выберите показ',
+              error: null,
+              customErrorMessages: {
+                valueMissing: 'Обязательно выберите показ'
+              },
+            },
+          ],
+        }
+      },
+    ],
+    [
+      {
+        type: 'ReservationForm',
+        props: {
+          fields: [
+            {
+              id: 'email', label: "email", type: "email", required: true,
+              value: "",
+            }, 
+            {
+              id: 'firstName', label: "Имя",
+              value: "",
+            },
+            {
+              id: 'lastName', label: "Фамилия",
+              value: "",
+            },
+            {
+              id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
+              value: "",
+            }, 
+            {
+              id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+              hidden: true,
+            },
+            {
+              id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+              hidden: true,
+            }
+          ],
+        },
+      },
+    ],
+    [
+      {
+        type: 'ReservationForm',
+        props: {
+          fields: [
+            {
+              id: 'email', label: "email", type: "email", required: true,
+              value: "",
+              hidden: true,
+            }, 
+            {
+              id: 'firstName', label: "Имя",
+              value: "",
+              hidden: true,
+            },
+            {
+              id: 'lastName', label: "Фамилия",
+              value: "",
+              hidden: true,
+            },
+            {
+              id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
+              value: "",
+              hidden: true,
+            }, 
+            {
+              id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+            },
+            {
+              id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+            }
+          ],
+        },
+      },
+    ],
+  ]
+}
+export const dataStore = {
+  ScheduleFilterForm: {
+    fields: {
+      performance: {
+        id: 'performance',
+        value: "1",
+        required: true,
+        label: 'Выберите спектакль',
+        error: null,
+        fieldIndex: 0,
+
+      },
+      place: {
         id: 'place',
         options: [],
         value: "2",
@@ -13,12 +133,13 @@ export const dataStore = {
         label: 'Выберите спектакль',
         error: null,
         customErrorMessages: {valueMissing: 'Обязательно выберите площадку'},
+        fieldIndex: 1,
       },
-    ],
+    },
   },
   ShowSelect: {
-    fields: [
-      {
+    fields: {
+      show: {
         id: 'show',
         options: [],
         value: "3",
@@ -27,33 +148,38 @@ export const dataStore = {
         error: null,
         customErrorMessages: {valueMissing: 'Обязательно выберите показ'},
       },
-    ],
+    },
   },
   ReservationForm: {
-    fields: [
-      {
+    fields: {
+      show: {
+        id: 'show', hidden: true, required: true, value: "",
+      }, 
+      email: {
         id: 'email', label: "email", type: "email", required: true,
-        value: "",
+        value: "", fieldIndex: 0,
       }, 
-      {
+      firstName: {
         id: 'firstName', label: "Имя",
-        value: "",
+        value: "", fieldIndex: 1,
       },
-      {
+      lastName: {
         id: 'lastName', label: "Фамилия",
-        value: "",
+        value: "", fieldIndex: 2,
       },
-      {
+      tel: {
         id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
-        value: "",
+        value: "", fieldIndex: 3,
       }, 
-      {
-        id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+      childrenSeats: {
+        id: 'childrenSeats', value: 1, type: "number", label: "Дети", 
+        fieldIndex: 4,
       },
-      {
-        id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+      adultSeats: {
+        id: 'adultSeats', value: 1, type: "number", label: "Взрослые", 
+        fieldIndex: 5,
       }
-    ],
+    },
   },
   steps: [
     {
@@ -101,6 +227,53 @@ export const dataStore = {
     },
   ],
 }
+
+export const serverData = {
+  ScheduleFilterForm: {
+    fields: [
+      {
+        id: 'performance',
+        value: "1",
+      },
+      {
+        id: 'place',
+        options: [],
+        value: "2",
+        required: true,
+        label: 'Выберите спектакль',
+        error: null,
+        customErrorMessages: {valueMissing: 'Обязательно выберите площадку'},
+      },
+    ],
+  },
+  ReservationForm: {
+    fields: [
+      {
+        id: 'email', label: "email", type: "email", required: true,
+        value: "",
+      }, 
+      {
+        id: 'firstName', label: "Имя",
+        value: "",
+      },
+      {
+        id: 'lastName', label: "Фамилия",
+        value: "",
+      },
+      {
+        id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
+        value: "",
+      }, 
+      {
+        id: 'childrenSeats', value: 1, type: "number", label: "Дети",
+      },
+      {
+        id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
+      }
+    ],
+  },
+}
+
 
 export const formMock = `
 <html>

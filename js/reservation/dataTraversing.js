@@ -40,20 +40,19 @@ export function getFieldsValues(fieldsDict) {
 function prepareObject(dataStore, step, objName) {
   const objTemplate = dataStore[objName];
   const {fields} = objTemplate;
-  const newObject = {
-    type: objName, props: {fields: JSON.parse(JSON.stringify(fields))}
-  };
   const {hiddenFields} = step;
-  hiddenFields.forEach(
-    fname => {
-      const field = getFieldById(newObject.props.fields, fname); 
-      if (field) {
-        field.hidden = true
-      }
+  return {
+    type: objName, props: {
+      fields: fields.map(field => {
+        const stepProps = {};
+        const {id} = field;
+        if (hiddenFields.some(fname => fname === id)) {
+          stepProps.hidden = true;
+        };
+        return {...field, ...stepProps}
+      })
     }
-  );
-  return newObject;
-
+  };
 }
 
 export function getStepObjects(dataStore, step) {

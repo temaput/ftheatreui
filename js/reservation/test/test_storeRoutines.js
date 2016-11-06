@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import {dataStore} from './fixture.js';
+import {dataStore, testSamples} from './fixture.js';
 import * as dtr from '../dataTraversing.js';
 import Store from '../Store.js';
 
@@ -10,8 +10,6 @@ describe('Manipulating data in Store', function() {
     _dataStore = JSON.parse(JSON.stringify(dataStore));
     store = new Store(_dataStore);
     steps = _dataStore.steps;
-    console.log(dataStore.ScheduleFilterForm.fields[0].options);
-    console.log(dataStore.ReservationForm.fields[0].value);
   });
 
   describe('Set item value', function() {
@@ -146,119 +144,7 @@ describe('Manipulating data in Store', function() {
   });
 
   describe('Provide steps and data to components', function() {
-    const testSample = [
-      [
-        {
-          type: 'ScheduleFilterForm',
-          props: {
-            fields: [
-              {
-                id: 'performance',
-                hidden: true,
-                value: "1",
-              },
-              {
-                id: 'place',
-                options: [],
-                value: "2",
-                required: true,
-                label: 'Выберите спектакль',
-                error: null,
-                customErrorMessages: {
-                  valueMissing: 'Обязательно выберите площадку'
-                },
-              },
-            ],
-          },
-        },
-        {
-          type: 'ShowSelect',
-          props: {
-            fields: [
-              {
-                id: 'show',
-                options: [],
-                value: "3",
-                required: true,
-                label: 'Выберите показ',
-                error: null,
-                customErrorMessages: {
-                  valueMissing: 'Обязательно выберите показ'
-                },
-              },
-            ],
-          }
-        },
-      ],
-      [
-        {
-          type: 'ReservationForm',
-          props: {
-            fields: [
-              {
-                id: 'email', label: "email", type: "email", required: true,
-                value: "",
-              }, 
-              {
-                id: 'firstName', label: "Имя",
-                value: "",
-              },
-              {
-                id: 'lastName', label: "Фамилия",
-                value: "",
-              },
-              {
-                id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
-                value: "",
-              }, 
-              {
-                id: 'childrenSeats', value: 1, type: "number", label: "Дети",
-                hidden: true,
-              },
-              {
-                id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
-                hidden: true,
-              }
-            ],
-          },
-        },
-      ],
-      [
-        {
-          type: 'ReservationForm',
-          props: {
-            fields: [
-              {
-                id: 'email', label: "email", type: "email", required: true,
-                value: "",
-                hidden: true,
-              }, 
-              {
-                id: 'firstName', label: "Имя",
-                value: "",
-                hidden: true,
-              },
-              {
-                id: 'lastName', label: "Фамилия",
-                value: "",
-                hidden: true,
-              },
-              {
-                id: 'tel', label: "Мобильный телефон", pattern: "[\d]{5,20}",
-                value: "",
-                hidden: true,
-              }, 
-              {
-                id: 'childrenSeats', value: 1, type: "number", label: "Дети",
-              },
-              {
-                id: 'adultSeats', value: 1, type: "number", label: "Взрослые",
-              }
-            ],
-          },
-        },
-      ],
-    ]
+    const testSample = testSamples.stepsData;
     it('provides steps', function() {
       assert.deepEqual(steps, store.getSteps(), "Provide steps");
     });
