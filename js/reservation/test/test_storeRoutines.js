@@ -10,8 +10,6 @@ describe('Manipulating data in Store', function() {
     _dataStore = JSON.parse(JSON.stringify(dataStore));
     store = new Store(_dataStore);
     steps = _dataStore.steps;
-    console.log(dataStore.ScheduleFilterForm.fields[0].options);
-    console.log(dataStore.ReservationForm.fields[0].value);
   });
 
   describe('Set item value', function() {
