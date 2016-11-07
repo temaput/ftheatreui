@@ -1,28 +1,25 @@
-import { assert } from 'chai';
-import {dataStore} from './fixture.js';
+import immutable from 'immutable';
+import chai from 'chai';
+import chaiImmutable from 'chai-immutable';
+import * as fixture from './fixture.js';
 import * as dtr from '../dataTraversing.js';
+
+const {assert, expect} = chai;
+chai.use(chaiImmutable);
+
+
 
 describe('Traversing data store', function() {
 
-  let _dataStore, steps=1;
+  let _dataStore, steps;
 
   beforeEach(function() {
-    _dataStore = Object.assign({}, dataStore);
+    _dataStore = Object.assign({}, JSON.parse(
+      JSON.stringify(fixture.dataStore)
+    ));
     steps = _dataStore.steps;
   });
 
-  describe('getting field by object/id', function() {
-    it('should get field by its id', function() {
-      const scheduleFilterFormFields = dtr.getObjectFields(
-        _dataStore, "ScheduleFilterForm");
-      const performanceField = dtr.getFieldById(
-        scheduleFilterFormFields, 'performance'
-      );
-      assert.isOk(performanceField, "Should be truthy");
-      assert.equal(performanceField.id, 'performance',
-        'Should have the very same id');
-    });
-  });
   describe(
     'getting filter fields', 
     function() {
@@ -44,8 +41,9 @@ describe('Traversing data store', function() {
       });
     }
   );
+
   describe(
-    'getting current step number and objects',
+    'getting current step number',
     function() {
       it('should get first step as current', function() {
         const currentStep = dtr.getCurrentStep(steps);
@@ -117,6 +115,23 @@ describe('Traversing data store', function() {
             "first step objects ok");
         }
       );
+    }
+  );
+
+  describe('transforming fields from list to dict and back to list',
+    function() {
+      const testListSample = fixture.serverData.ReservationForm.fields;
+      const testMapSample = fixture.dataStore.ReservationForm.fields;
+
+      const fieldsMap = immutable.OrderedMap(testMapSample);
+      const fieldsList = immutable.List(testListSample);
+
+      expect(dtr.fieldsListToOrderedMap(fieldsList)).to.equal(fieldsMap);
+      expect(dtr.fieldsOrderedMapToList(fieldsMap)).to.equal(fieldsList);
+      expect(dtr.fieldsListToOrderedMap(
+        dtr.fieldsOrderedMapToList(fieldsMap))
+      ).to.equal(fieldsMap);
+
     }
   );
 

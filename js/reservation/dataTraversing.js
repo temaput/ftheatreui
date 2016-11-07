@@ -1,3 +1,5 @@
+import {OrderedMap, List} from 'immutable';
+
 export function getCurrentStep(steps) {
   return steps[getCurrentStepIndex(steps)];
 }
@@ -28,6 +30,7 @@ export function fieldsListToDict(fieldsList) {
   });
   return fieldsDict;
 }
+
 
 export function getFieldsValues(fieldsDict) {
   const fieldsValues = {};
@@ -73,3 +76,14 @@ export function getFilterFieldsValues(dataStore) {
   return getFieldsValues(filterFields);
 }
 
+export function fieldsListToOrderedMap(fieldsList) {
+  return new OrderedMap(
+    fieldsList.map(field => [field.id, field])
+  );
+}
+
+export function fieldsOrderedMapToList(fieldsMap) {
+  return new List(
+    fieldsMap.keys().map(fname => fieldsMap.get(fname))
+  )
+}
