@@ -12,6 +12,6 @@ export const ActionTypes =  {
 
 export const DocumentIds = {
   ROOT_ELEMENT: 'reservation-main',
-  PRESCRIBED_DATA: 'reservation-prescribed-data',
+  PREDEFINED_DATA: 'reservation-predefined-data',
 }
 

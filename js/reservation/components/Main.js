@@ -22,7 +22,7 @@ export default class Main extends React.Component {
   }
 
   getInitialData() {
-    FormActions.getInitialData(document.URL);
+    FormActions.getInitialData(this.props.predefinedData);
       /*
     if (this.props.prescribedData) {
       const {currents, placesFirst} = this.props.prescribedData;

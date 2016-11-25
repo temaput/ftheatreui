@@ -5,18 +5,18 @@ import ReactDOM from 'react-dom';
 import Main from './components/Main';
 import {DocumentIds} from './constants.js';
 
-function getPrescribedData() {
+function getPredefinedData() {
   const prescribedData =  JSON.parse(
-    document.getElementById(DocumentIds.PRESCRIBED_DATA).textContent
+    document.getElementById(DocumentIds.PREDEFINED_DATA).textContent
   );
   return prescribedData;
 }
 
 document.onreadystatechange = () => {
   if (document.readyState === 'interactive') {
-    const prescribedData = getPrescribedData();
+    const predefinedData = getPredefinedData();
     ReactDOM.render(
-      <Main prescribedData={prescribedData} />,
+      <Main predefinedData={predefinedData} />,
       document.getElementById(DocumentIds.ROOT_ELEMENT)
     );
   }
