@@ -5,10 +5,32 @@ import {sendXHR} from '../utils/utils.js';
 
 
 class WebAPI {
-  getFormFields() {
+  getScheduleFilter(variables) {
+    const data = Queries.scheduleFilter(variables);
+
+    sendXHR(data).then(
+      function(response) {
+        ServerActions.receiveData('scheduleFilter', response.data)
+      },
+      function(error) {
+        throw(error);
+      }
+    );
   }
-  getFormSteps() {
+
+  getReservationForm(variables) {
+    const data = Queries.reservationForm(variables);
+
+    sendXHR(data).then(
+      function(response) {
+        ServerActions.receiveData('reservationForm', response.data)
+      },
+      function(error) {
+        throw(error);
+      }
+    );
   }
+
   getPerformances(placeId) {
     const data = (
       placeId ? Queries.performancesByPlace: Queries.scheduledPerformances

@@ -4,6 +4,12 @@ import WebAPI from '../WebAPI.js';
 
 const FormActions = {
 
+  getReservationForm(variables) {
+    WebAPI.getReservationForm(variables)
+  },
+  getScheduleFilter(variables) {
+    WebAPI.getScheduleFilter(variables)
+  },
   changeFormData(itemType, data, event) {
     Dispatcher.dispatch({
       type: ActionTypes.CHANGE_FORM_DATA,
