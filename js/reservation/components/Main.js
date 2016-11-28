@@ -1,7 +1,7 @@
 import React from 'react';
 import Store from '../Store.js';
 import FormActions from '../actions/FormActionCreators.js';
-import Stepper from './Stepper.js';
+import {Stepper, Step} from './Stepper.js';
 import ReservationForm from './ReservationForm.js';
 import ScheduleFilterForm from './ScheduleFilterForm.js';
 import ShowSelect from './ShowSelect.js';
@@ -22,24 +22,8 @@ export default class Main extends React.Component {
   }
 
   getInitialData() {
-    FormActions.getInitialData(this.props.predefinedData);
-      /*
-    if (this.props.prescribedData) {
-      const {currents, placesFirst} = this.props.prescribedData;
-      if (currents) {
-        const {place, performance} = currents;
-        if (performance) {
-          this.onChangeFormData('performance', performance);
-        } else if (place) {
-          this.onChangeFormData('place', place);
-        }
-      } else {
-        placesFirst ? FormActions.getPlaces(): FormActions.getPerformances()
-      }
-    } else {
-      FormActions.getPerformances()
-    }
-    */
+    const {scheduleFilter: variables} = this.props.predefinedData;
+    FormActions.getScheduleFilter(variables);
   }
 
 
@@ -51,15 +35,6 @@ export default class Main extends React.Component {
     return this.filterForm;
   }
 
-  onScheduleFilterUpdate({performance, place}) {
-    if (place && performance) {
-      FormActions.getShows(performance, place);
-    } else if (place) {
-      FormActions.getPerformances(place)
-    } else if (performance) {
-      FormActions.getPlaces(performance)
-    }
-  }
 
   onShowChoose(showId) {
     if (showId) {
@@ -119,39 +94,34 @@ export default class Main extends React.Component {
   }
 
 
-  renderStepChildren() {
-    const subElementsTemplate = {
-      ReservationForm: {
-        type: ReservationForm,
-        additionalProps: {
-            onChange: this.onChangeFormData.bind(this),
-            onSubmit: this.makeReservation.bind(this),
-            ref: el => this.reservationForm = el
-        },
-      },
-      ScheduleFilterForm: 
-        {type: ScheduleFilterForm,},
-      ShowSelect: {type: ShowSelect,},
-    }
-    return this.state.stepData.map(el => {
-      const subElement = subElementsTemplate[el];
-      return React.createElement(
-        subElement.type,
-        {...el.props, ...subElement.additionalProps},
-      );
-    });
-
-  }
 
   render() {
+    const {componentProps} = this.props;
+
     return (
       <div>
         <Stepper
           steps={this.state.steps}
+        >
+          <Step 
+            component={ScheduleFilter}
+            componentProps={componentProps}
           gotoNext={this.gotoNext.bind(this)}
           gotoPrevious={this.gotoPrevious.bind(this)}
-        >
-          {this.renderStepChildren()}
+          />
+          <Step 
+            component={ReservationForm}
+            componentProps={componentProps}
+          gotoNext={this.gotoNext.bind(this)}
+          gotoPrevious={this.gotoPrevious.bind(this)}
+          />
+          <Step 
+            component={ReservationForm}
+            componentProps={componentProps}
+          gotoNext={this.gotoNext.bind(this)}
+          gotoPrevious={this.gotoPrevious.bind(this)}
+          />
+
         </Stepper>
       </div>
     )
