@@ -1,69 +1,67 @@
+const Fragments = {
+  fieldAttrs: `
+    fragment field on FormFieldObject {
+      id type value label helpText disabled required 
+      maxlength 
+      customErrorMessages {valueMissing typeMismatch}
+    }
+    fragment options on FormFieldObject {
+      options {label value}
+    }
+    fragment validation on FormFieldObject {
+      error
+    }
+    fragment textAttrs on FormFieldObject {
+      cols rows
+    }
+    fragment numAttrs on FormFieldObject {
+      min max 
+    }
+  `,
+
+}
 const Queries = {
-  getShowsByPPAndDate: (performancePk, placePk, showtimeDate) => ({
+
+  reservationForm: (variables, fieldListing) => ({
     query: `
-        query QueryShows(
-            $performancePk: String,
-            $placePk: String,
-            $showtimeDate: String,
-            ) {
-            show:shows(
-              performancePk: $performancePk,
-              placePk: $placePk
-            ) {
-                        id showtime:showtimeStamp price
-            }
-            showByDate:shows(
-              performancePk: $performancePk,
-              placePk: $placePk,
-              showtimeDate: $showtimeDate
-            ){
-                        id showtime:showtimeStamp price
-            }
+      query ReservationForm(
+        $performance: String,
+        $place: String,
+        $show: String
+      ) {
+        reservationForm(
+          performance: $performance,
+          place: $place,
+          show: $show
+        ) {
+          ${fieldListing}
         }
-  `,
-    variables: {performancePk, placePk, showtimeDate},
-  }),
-
-  performancesByPlace: (pk) => ({
-    query: `
-          query QueryPerformancesByPlace ($pk:String){
-              performance:performancesByPlace(pk: $pk) {
-                          id title
-              }
-          }
-  `,
-    variables: {pk},
-  }),
-
-  placesByPerformance: (pk) =>({
-    query: `
-          query QueryPlacesByPerformance($pk:String){
-              place:placesByPerformance(pk: $pk) {
-                          id title
-              }
-          }
-  `,
-    variables: {pk},
-  }),
-
-  scheduledPerformances: () => ({
-    query:`
-    query QueryScheduledPerformances {
-      performance:scheduledPerformances {
-        id title
       }
-    }
+
+    ${Fragments.fieldAttrs}
     `,
+    variables,
   }),
 
-  scheduledPlaces: () => ({
-    query:`
-    query QueryScheduledPlaces {
-      place:scheduledPlaces {
-        id title
+  scheduleFilter: (variables, fieldListing) => ({
+    query: `
+      query ScheduleFilter(
+        $performance: String,
+        $place: String,
+        $mode: String
+      ) {
+        scheduleFilter(
+          performance: $performance,
+          place: $place,
+          mode: $mode
+        ) {
+          ${fieldListing}
+        }
       }
-    }
+
+    ${Fragments.fieldAttrs}
     `,
+    variables,
   }),
 
 }

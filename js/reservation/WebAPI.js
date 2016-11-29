@@ -5,9 +5,19 @@ import {sendXHR} from '../utils/utils.js';
 
 
 class WebAPI {
-  getFormFields() {
-  }
-  getFormSteps() {
+  getScheduleFilter(variables, fieldListing) {
+    const query = Queries.scheduleFilter(variables, fieldListing);
+    sendXHR(data(placeId)).then(
+      function(response) {
+        ServerActions.receiveData(response.data)
+      },
+      function(error) {
+        throw(error);
+      }
+    );
+
+
+
   }
   getPerformances(placeId) {
     const data = (
