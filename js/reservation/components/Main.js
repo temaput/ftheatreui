@@ -144,14 +144,44 @@ export default class Main extends React.Component {
   }
 
   render() {
+    const {scheduleFilterData, reservationFormData} = this.props.data;
+    const FilterForm = (
+      <Form onSubmit={this.filterFormSubmit} validator={this.formValidator}>
+        <Select {...scheduleFilterData.performance} />
+        <Select {...scheduleFilterData.place} />
+        <Select {...scheduleFilterData.show} />
+      </Form>
+    )
+
+    const UserForm = (
+      <Form onSubmit={this.userFormSubmit} validator={this.formValidator}>
+        <Input {...reservationFormData.email}/>
+        <Input {...reservationFormData.tel}/>
+        <Input {...reservationFormData.firstName}/>
+        <Input {...reservationFormData.lastName}/>
+      </Form>
+    )
+
+    const ReservationForm = (
+      <Form onSubmit={this.makeReservation} validator={this.formValidator}>
+        <Input {...reservationFormData.childrenSeats}/>
+        <Input {...reservationFormData.adultSeats}/>
+      </Form>
+
+    )
+
     return (
       <div>
-        <Stepper
-          steps={this.state.steps}
-          gotoNext={this.gotoNext.bind(this)}
-          gotoPrevious={this.gotoPrevious.bind(this)}
-        >
-          {this.renderStepChildren()}
+        <Stepper>
+          <Step onNext={FilterForm.submit}>
+            {FilterForm}
+          </Step>
+          <Step onNext={UserForm.submit}>
+            {UserForm}
+          </Step>
+          <Step onNext={ReservationForm.submit}>
+            {ReservationForm}
+          </Step>
         </Stepper>
       </div>
     )
