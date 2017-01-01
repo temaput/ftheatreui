@@ -5,59 +5,16 @@ import {sendXHR} from '../utils/utils.js';
 
 
 class WebAPI {
-  getScheduleFilter(variables, fieldListing) {
-    const query = Queries.scheduleFilter(variables, fieldListing);
-    sendXHR(data(placeId)).then(
+  runQuery(queryName, variables, fieldListing, action) {
+    const query = Queries[queryName](variables, fieldListing);
+    sendXHR(query).then(
       function(response) {
-        ServerActions.receiveData(response.data)
-      },
-      function(error) {
-        throw(error);
-      }
-    );
-
-
-
-  }
-  getPerformances(placeId) {
-    const data = (
-      placeId ? Queries.performancesByPlace: Queries.scheduledPerformances
-    );
-
-    sendXHR(data(placeId)).then(
-      function(response) {
-        ServerActions.receiveData('performance', response.data)
+        action(response.data)
       },
       function(error) {
         throw(error);
       }
     );
   }
-  getPlaces(performanceId) {
-    const data = (
-      performanceId ? Queries.placesByPerformance:
-        Queries.scheduledPlaces
-    );
-
-    sendXHR(data(performanceId)).then(
-      function(response) {
-        ServerActions.receiveData('place', response.data);
-      },
-      function(error) {
-        throw(error);
-      }
-    );
-  }
-  getShows(performanceId, placeId, showDate) {
-    const data = Queries.getShowsByPPAndDate;
-    sendXHR(data(performanceId, placeId, showDate)).then(
-      function(response) {
-        ServerActions.receiveData('show', response.data);
-      },
-      function(error) {
-        throw(error);
-      }
-    );
-  } 
 }
 export default new WebAPI();

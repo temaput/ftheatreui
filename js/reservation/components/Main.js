@@ -72,10 +72,6 @@ export default class Main extends React.Component {
     this.setState(newState);
   }
 
-  makeReservation(reservationData) {
-    FormActions.makeReservation(reservationData)
-  }
-
   gotoNext() {
     //validation first
     const errors = this.getReservationForm().validate();
@@ -92,23 +88,6 @@ export default class Main extends React.Component {
   }
 
 
-  onChangeFormData(itemType, data, event) {
-    FormActions.changeFormData(itemType, data, event)
-    switch (itemType) {
-      case 'performance':
-      case 'place':
-        this.getChoices();
-        break;
-      case 'show':
-        // go to step 2
-        FormActions.gotoNext();
-        break;
-      default:
-        //no op
-        
-    }
-  }
-
   componentDidMount() {
     Store.addChangeListener(this.onChange.bind(this));
     this.getInitialData();
@@ -119,34 +98,33 @@ export default class Main extends React.Component {
   }
 
 
-  renderStepChildren() {
-    const subElementsTemplate = {
-      ReservationForm: {
-        type: ReservationForm,
-        additionalProps: {
-            onChange: this.onChangeFormData.bind(this),
-            onSubmit: this.makeReservation.bind(this),
-            ref: el => this.reservationForm = el
-        },
-      },
-      ScheduleFilterForm: 
-        {type: ScheduleFilterForm,},
-      ShowSelect: {type: ShowSelect,},
-    }
-    return this.state.stepData.map(el => {
-      const subElement = subElementsTemplate[el];
-      return React.createElement(
-        subElement.type,
-        {...el.props, ...subElement.additionalProps},
-      );
-    });
+  filterFormInput(fname, value, element) {
+  }
 
+  reservationFormInput(fname, value, element) {
+  }
+
+  filterFormSubmit() {
+    //do server-side validation
+    const fieldListing = `
+
+    `;
+    //goto next
+  }
+
+
+
+  userFormSubmit() {
+  }
+
+  makeReservation() {
+    FormActions.makeReservation()
   }
 
   render() {
-    const {scheduleFilterData, reservationFormData} = this.props.data;
+    const {scheduleFilterData, userFormData, reservationFormData} = this.state;
     const FilterForm = (
-      <Form onSubmit={this.filterFormSubmit} validator={this.formValidator}>
+      <Form onSubmit={this.filterFormSubmit} onInput={this.filterFormInput}>
         <Select {...scheduleFilterData.performance} />
         <Select {...scheduleFilterData.place} />
         <Select {...scheduleFilterData.show} />
@@ -154,16 +132,16 @@ export default class Main extends React.Component {
     )
 
     const UserForm = (
-      <Form onSubmit={this.userFormSubmit} validator={this.formValidator}>
-        <Input {...reservationFormData.email}/>
-        <Input {...reservationFormData.tel}/>
-        <Input {...reservationFormData.firstName}/>
-        <Input {...reservationFormData.lastName}/>
+      <Form onSubmit={this.userFormSubmit} onInput={this.userFormInput}>
+        <Input {...userFormData.email}/>
+        <Input {...userFormData.tel}/>
+        <Input {...userFormData.firstName}/>
+        <Input {...userFormData.lastName}/>
       </Form>
     )
 
     const ReservationForm = (
-      <Form onSubmit={this.makeReservation} validator={this.formValidator}>
+      <Form onSubmit={this.makeReservation} onInput={this.reservationFormInput}>
         <Input {...reservationFormData.childrenSeats}/>
         <Input {...reservationFormData.adultSeats}/>
       </Form>
