@@ -5,11 +5,10 @@ import {sendXHR} from '../utils/utils.js';
 
 
 class WebAPI {
-  runQuery(queryName, variables, fieldListing, action) {
-    const query = Queries[queryName](variables, fieldListing);
+  runQuery(query) {
     sendXHR(query).then(
       function(response) {
-        action(response.data)
+        return response.data
       },
       function(error) {
         throw(error);

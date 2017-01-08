@@ -15,3 +15,29 @@ export const DocumentIds = {
   PRESCRIBED_DATA: 'reservation-prescribed-data',
 }
 
+export const FilterModes = {
+  performanceFirst: {
+    name: 'performanceFirst',
+    'stepByStep': true,
+    'performanceFirst': true,
+    'dateFilter': null,
+    'selectShow': true,
+  },
+  placeFirst: {
+    name: 'placeFirst',
+    'stepByStep': true,
+    'performanceFirst': false,
+    'dateFilter': null,
+    'selectShow': true,
+  },
+  fullOptions: {
+    name: 'fullOptions',
+    'stepByStep': false,
+    'performanceFirst': false,
+    'dateFilter': null,
+    'selectShow': false,
+  },
+}
+
+FilterModes.default = FilterModes.performanceFirst;
+
